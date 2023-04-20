@@ -9,9 +9,9 @@ from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from . models import Customers, Order
+from .models import Customers, Order, Account
 from . models import Product
-from . serializers import CustomersSerializer
+from .serializers import CustomersSerializer, AccountSerializer
 from . serializers import ProductSerializer
 from . serializers import OrderSerializer
 
@@ -43,6 +43,39 @@ class CustomerList(APIView):
         return HttpResponse(status=201)
 
 
+class AccountList(APIView):
+
+    def get(self, request):
+        accounts = Account.objects.all() #obtener todas las instancias de customers
+        serializer = AccountSerializer(accounts, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        if request.method == 'POST':
+            received_json_data = json.loads(request.body)
+            print(received_json_data['customer_id'])
+            print(received_json_data['account_number'])
+            print(received_json_data['balance'])
+
+            # read customer_id from the token in the future
+
+            new_account = Account(customer_id=received_json_data['customer_id'],
+                                  account_number=received_json_data['account_number'],
+                                  balance=received_json_data['balance'])
+            new_account.save()
+        return HttpResponse(status=201)
+
+
+class AccountOnly(APIView):
+    def get(self, request, customer_id):
+        try:
+            account = Account.objects.get(customer_id=customer_id)
+            serializer = AccountSerializer(instance=account, many=True)
+            return Response(serializer.data)
+        except Account.DoesNotExist:
+            raise Http404("Account does not Exist")
+
+
 class UserLogin(APIView):
     def post(self, request):
         if request.method == 'POST':
@@ -56,12 +89,12 @@ class UserLogin(APIView):
             print(user.first_name)
             print(user.email)
             print(user.is_staff)
-            # return HttpResponse(status=200)
+
             responseData = {
                 'id': user.id,
                 'name': user.first_name,
-                'last_name': user.last_name
-                # 'is_staff': user.is_staff
+                'last_name': user.last_name,
+                'is_staff': user.is_staff
             }
             if user.is_staff:
                 return HttpResponse(json.dumps(responseData), content_type="application/json", status=202)
