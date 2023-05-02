@@ -2,7 +2,7 @@ import json
 
 from django.shortcuts import render
 
-from django.http import HttpResponse, Http404, JsonResponse
+from django.http import HttpResponse, Http404, JsonResponse, HttpResponseBadRequest
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
@@ -80,6 +80,24 @@ class AccountOnly(APIView):
             account = Account.objects.filter(customer_id=customer_id, account_number=account_number)
             account.delete()
             return HttpResponse(status=200)
+        except Account.DoesNotExist:
+            raise Http404("Account does not Exist")
+
+
+class DepositInAccountOnly(APIView):
+    def post(self, request, customer_id):
+        try:
+            received_json_data = json.loads(request.body)
+            account_number = received_json_data['account_number']
+            deposit_to_do = float(received_json_data['deposit'])
+            deposit_limit = 10000
+            if deposit_to_do > deposit_limit:
+                return HttpResponse(status=400, reason="Deposit Limit is exceeded, deposits should be under 10,000")
+            account = Account.objects.get(customer_id=customer_id, account_number=account_number)
+            account.balance = str(float(account.balance) + deposit_to_do)
+            account.save()
+            serializer = AccountSerializer(instance=account, many=False)
+            return Response(serializer.data)
         except Account.DoesNotExist:
             raise Http404("Account does not Exist")
 
