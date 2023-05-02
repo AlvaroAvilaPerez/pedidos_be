@@ -69,9 +69,17 @@ class AccountList(APIView):
 class AccountOnly(APIView):
     def get(self, request, customer_id):
         try:
-            account = Account.objects.get(customer_id=customer_id)
+            account = Account.objects.filter(customer_id=customer_id)
             serializer = AccountSerializer(instance=account, many=True)
             return Response(serializer.data)
+        except Account.DoesNotExist:
+            raise Http404("Account does not Exist")
+
+    def delete(self, request, customer_id, account_number):
+        try:
+            account = Account.objects.filter(customer_id=customer_id, account_number=account_number)
+            account.delete()
+            return HttpResponse(status=200)
         except Account.DoesNotExist:
             raise Http404("Account does not Exist")
 
