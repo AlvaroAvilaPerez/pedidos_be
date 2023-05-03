@@ -26,6 +26,7 @@ urlpatterns = [
     path('accounts/', views.AccountList.as_view()),
     path('accounts/<int:customer_id>', views.AccountOnly.as_view()),
     path('deposit/<int:customer_id>', views.DepositInAccountOnly.as_view()),
+    path('withdraw/<int:customer_id>', views.WithdrawInAccountOnly.as_view()),
     path('accounts/<int:customer_id>/<str:account_number>', views.AccountOnly.as_view()),
     path('login/', views.UserLogin.as_view()),
     path('products/', views.ProductList.as_view()),

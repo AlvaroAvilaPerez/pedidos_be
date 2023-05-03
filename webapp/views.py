@@ -44,7 +44,6 @@ class CustomerList(APIView):
 
 
 class AccountList(APIView):
-
     def get(self, request):
         accounts = Account.objects.all() #obtener todas las instancias de customers
         serializer = AccountSerializer(accounts, many=True)
@@ -56,9 +55,7 @@ class AccountList(APIView):
             print(received_json_data['customer_id'])
             print(received_json_data['account_number'])
             print(received_json_data['balance'])
-
             # read customer_id from the token in the future
-
             new_account = Account(customer_id=received_json_data['customer_id'],
                                   account_number=received_json_data['account_number'],
                                   balance=received_json_data['balance'])
@@ -100,7 +97,26 @@ class DepositInAccountOnly(APIView):
             return Response(serializer.data)
         except Account.DoesNotExist:
             raise Http404("Account does not Exist")
-
+        
+class WithdrawInAccountOnly(APIView):
+    def post(self, request, customer_id):
+        try:
+            received_json_data = json.loads(request.body)
+            account_number = received_json_data['account_number']
+            withdraw_to_do = float(received_json_data['withdraw'])
+            account = Account.objects.get(customer_id=customer_id, account_number=account_number)
+            balance_limit = 100
+            balance = ((float(account.balance) - balance_limit) - withdraw_to_do)
+            if balance > withdraw_to_do:
+                account = Account.objects.get(customer_id=customer_id, account_number=account_number)
+                account.balance = str(float(account.balance) - withdraw_to_do)
+                account.save()
+                serializer = AccountSerializer(instance=account, many=False)
+                return Response(serializer.data)
+            else:
+                return HttpResponse(status=400, reason="The account cannot have less than $100  balance, withdraw another amount.")
+        except Account.DoesNotExist:
+            raise Http404("Account does not Exist")
 
 class UserLogin(APIView):
     def post(self, request):
