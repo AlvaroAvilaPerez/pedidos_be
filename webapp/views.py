@@ -106,18 +106,22 @@ class WithdrawInAccountOnly(APIView):
             withdraw_to_do = float(received_json_data['withdraw'])
             account = Account.objects.get(customer_id=customer_id, account_number=account_number)
             balance_limit = 100
-            balance = ((float(account.balance) - balance_limit) - withdraw_to_do)
-            if balance > withdraw_to_do:
-                account = Account.objects.get(customer_id=customer_id, account_number=account_number)
-                account.balance = str(float(account.balance) - withdraw_to_do)
-                account.save()
-                serializer = AccountSerializer(instance=account, many=False)
-                return Response(serializer.data)
+            current_balance = float(account.balance)            
+            if current_balance > withdraw_to_do:
+                balance = (current_balance - withdraw_to_do)
+                if balance > balance_limit:
+                    account = Account.objects.get(customer_id=customer_id, account_number=account_number)
+                    account.balance = str(current_balance - withdraw_to_do)
+                    account.save()
+                    serializer = AccountSerializer(instance=account, many=False)
+                    return Response(serializer.data)
+                else:
+                    return Response(status=status.HTTP_200_OK, data={"message": "The account cannot have less than $100 in balance, bad transaction."})
             else:
-                return HttpResponse(status=400, reason="The account cannot have less than $100  balance, withdraw another amount.")
+                return HttpResponse(status=200, reason="The account cannot have less than $100 in balance, bad transaction.")
         except Account.DoesNotExist:
-            raise Http404("Account does not Exist")
-        
+            raise Http404("Account does not Exist")        
+
 class WithdrawInAccount(APIView):
     def post(self, request, customer_id):
         try:
