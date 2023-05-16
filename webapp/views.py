@@ -117,6 +117,27 @@ class WithdrawInAccountOnly(APIView):
                 return HttpResponse(status=400, reason="The account cannot have less than $100  balance, withdraw another amount.")
         except Account.DoesNotExist:
             raise Http404("Account does not Exist")
+        
+class WithdrawInAccount(APIView):
+    def post(self, request, customer_id):
+        try:
+            limit_porcentual_threshold = 90
+            received_json_data = json.loads(request.body)
+            account_number = received_json_data['account_number']
+            withdraw_to_do = float(received_json_data['withdraw'])
+            account = Account.objects.get(customer_id=customer_id, account_number=account_number)
+            current_balance = float(account.balance)
+            withdraw_to_do_porcentual = ((withdraw_to_do * 100) / current_balance)
+            
+            if withdraw_to_do_porcentual < limit_porcentual_threshold:                
+                account.balance = str(current_balance - withdraw_to_do)
+                account.save()
+                serializer = AccountSerializer(instance=account, many=False)
+                return Response(serializer.data)
+            else:
+                return HttpResponse(status=400, reason="The account cannot make a withdrawal greater than 90% of the balance, withdraw another amount.")
+        except Account.DoesNotExist:
+            raise Http404("Account does not Exist")
 
 class UserLogin(APIView):
     def post(self, request):
