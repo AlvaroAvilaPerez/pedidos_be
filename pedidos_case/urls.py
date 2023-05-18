@@ -30,10 +30,4 @@ urlpatterns = [
     path('withdrawals/<int:customer_id>', views.WithdrawInAccount.as_view()),
     path('accounts/<int:customer_id>/<str:account_number>', views.AccountOnly.as_view()),
     path('login/', views.UserLogin.as_view()),
-    path('products/', views.ProductList.as_view()),
-    path('product/<int:product_id>', views.ProductOnly.as_view()),
-    path('orders/', views.OrderList.as_view()),
-    path('order/', views.OrderDetail.as_view()),
-    path('delivered/', views.OrderDeliveredUpdate.as_view()),
-
 ]

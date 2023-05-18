@@ -21,28 +21,3 @@ class Account(models.Model):
     def __str__(self):
         user_owner = Customers.objects.get(customer_id=self.customer_id)
         return str(self.id) + ' - User: ' + str(self.customer_id) + " - " + user_owner.first_name + ': Account Number: ' + str(self.account_number)
-
-
-class Product(models.Model):
-    objects = None
-    name = models.CharField(max_length=100)
-    price = models.CharField(max_length=100)
-
-    def __str__(self):
-        return str(self.id) + ' - ' + self.name
-
-
-class Order(models.Model):
-    product_id = models.CharField(max_length=100)
-    customer_id = models.CharField(max_length=100)
-    quantity = models.CharField(max_length=100)
-    Price = models.CharField(max_length=100)
-    date = models.CharField(max_length=100)
-    time = models.CharField(max_length=100)
-    is_delivered = models.BooleanField(default=False)
-
-    def __str__(self):
-        product = Product.objects.get(id=self.product_id)
-        user = User.objects.get(id=self.customer_id)
-        customer = Customers.objects.get(customer_id=user.id)
-        return str(self.id) + ' - ' + self.date + ' - ' + self.time + ' - Pidio: ' + self.quantity + ' - ' + product.name + ' - ' + customer.first_name
