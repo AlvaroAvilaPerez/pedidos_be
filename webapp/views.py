@@ -9,11 +9,9 @@ from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Customers, Order, Account
-from . models import Product
+from .models import Customers, Account
 from .serializers import CustomersSerializer, AccountSerializer
-from . serializers import ProductSerializer
-from . serializers import OrderSerializer
+
 
 
 class CustomerList(APIView):
