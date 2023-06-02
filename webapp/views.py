@@ -43,7 +43,7 @@ class CustomerList(APIView):
 
 class AccountList(APIView):
     def get(self, request):
-        accounts = Account.objects.all() #obtener todas las instancias de customers
+        accounts = Account.objects.all() #obtener todas las instancias de Accounts
         serializer = AccountSerializer(accounts, many=True)
         return Response(serializer.data)
 
@@ -59,6 +59,24 @@ class AccountList(APIView):
                                   balance=received_json_data['balance'])
             new_account.save()
         return HttpResponse(status=201)
+
+class CustomerOnly(APIView):
+
+    def delete(self, request, customer_id):
+        try:        
+            accounts = Account.objects.filter(customer_id=customer_id)
+            customer = Customers.objects.filter(customer_id=customer_id)
+            user = User.objects.filter(id=customer_id)
+            print("*******************************")
+            print(accounts)
+            for account in accounts:
+                account.delete()                       
+            customer.delete()
+            user.delete()
+            print("*******************************")
+            return HttpResponse(status=200)
+        except Account.DoesNotExist:
+            raise HttpResponse("Customer does not Exist")
 
 
 class AccountOnly(APIView):
@@ -77,6 +95,7 @@ class AccountOnly(APIView):
             return HttpResponse(status=200)
         except Account.DoesNotExist:
             raise Http404("Account does not Exist")
+        
 
 
 class DepositInAccountOnly(APIView):

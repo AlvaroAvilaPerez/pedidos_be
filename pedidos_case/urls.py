@@ -23,6 +23,7 @@ from webapp import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('customers/', views.CustomerList.as_view()),
+    path('customer/<int:customer_id>', views.CustomerOnly.as_view()),
     path('accounts/', views.AccountList.as_view()),
     path('accounts/<int:customer_id>', views.AccountOnly.as_view()),
     path('deposit/<int:customer_id>', views.DepositInAccountOnly.as_view()),
