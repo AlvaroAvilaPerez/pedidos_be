@@ -94,18 +94,24 @@ class AccountOnly(APIView):
     def get(self, request, customer_id):
         try:
             account = Account.objects.filter(customer_id=customer_id)
+            if not account.exists():
+                raise PermissionDenied("Account does not exist")
+            
             serializer = AccountSerializer(instance=account, many=True)
             return Response(serializer.data)
         except Account.DoesNotExist:
-            raise Http404("Account does not Exist")
-
+            raise PermissionDenied("Account does not exist")
+        
     def delete(self, request, customer_id, account_number):
         try:
             account = Account.objects.filter(customer_id=customer_id, account_number=account_number)
+            if not account.exists():
+                raise PermissionDenied("Account does not exist")
+
             account.delete()
             return HttpResponse(status=200)
         except Account.DoesNotExist:
-            raise Http404("Account does not Exist")
+            raise PermissionDenied("Account does not exist")
         
 
 class DepositInAccountOnly(APIView):
