@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Customers, Account
 from .serializers import CustomersSerializer, AccountSerializer
+from rest_framework.exceptions import PermissionDenied
 
 
 
@@ -59,25 +60,35 @@ class AccountList(APIView):
                                   balance=received_json_data['balance'])
             new_account.save()
         return HttpResponse(status=201)
+    
 
 class CustomerOnly(APIView):
+    def get(self, request, customer_id):
+        try:
+            customer = Customers.objects.get(customer_id=customer_id)
+            serializer = CustomersSerializer(instance=customer)
+            return Response(serializer.data)
+        except Customers.DoesNotExist:
+            raise PermissionDenied("Customer does not exist")
 
     def delete(self, request, customer_id):
         try:        
             accounts = Account.objects.filter(customer_id=customer_id)
             customer = Customers.objects.filter(customer_id=customer_id)
             user = User.objects.filter(id=customer_id)
-            print("*******************************")
-            print(accounts)
+
+            if not accounts.exists() and not customer.exists() and not user.exists():
+                raise PermissionDenied("Customer does not exist")
+
             for account in accounts:
                 account.delete()                       
             customer.delete()
             user.delete()
-            print("*******************************")
+
             return HttpResponse(status=200)
         except Account.DoesNotExist:
-            raise HttpResponse("Customer does not Exist")
-
+            raise PermissionDenied("Customer does not exist")
+        
 
 class AccountOnly(APIView):
     def get(self, request, customer_id):
@@ -97,7 +108,6 @@ class AccountOnly(APIView):
             raise Http404("Account does not Exist")
         
 
-
 class DepositInAccountOnly(APIView):
     def post(self, request, customer_id):
         try:
@@ -114,6 +124,7 @@ class DepositInAccountOnly(APIView):
             return Response(serializer.data)
         except Account.DoesNotExist:
             raise Http404("Account does not Exist")
+        
     
 class WithdrawInAccount(APIView):
     def is_transaction_valid(current_balance, withdraw_to_do):
@@ -150,7 +161,8 @@ class WithdrawInAccount(APIView):
             else:
                 return HttpResponse(status=200, reason="The account cannot have less than $100 in balance, bad transaction.")
         except Account.DoesNotExist:
-            raise Http404("Account does not Exist")    
+            raise Http404("Account does not Exist")  
+          
 
 class UserLogin(APIView):
     def post(self, request):
