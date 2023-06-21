@@ -11,8 +11,6 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Customers, Account
 from .serializers import CustomersSerializer, AccountSerializer
-from rest_framework.exceptions import PermissionDenied
-
 
 
 class CustomerList(APIView):
@@ -69,7 +67,7 @@ class CustomerOnly(APIView):
             serializer = CustomersSerializer(instance=customer)
             return Response(serializer.data)
         except Customers.DoesNotExist:
-            raise PermissionDenied("Customer does not exist")
+            raise Http404("Customer does not exist")
 
     def delete(self, request, customer_id):
         try:        
@@ -78,7 +76,7 @@ class CustomerOnly(APIView):
             user = User.objects.filter(id=customer_id)
 
             if not accounts.exists() and not customer.exists() and not user.exists():
-                raise PermissionDenied("Customer does not exist")
+                raise Http404("Customer does not exist")
 
             for account in accounts:
                 account.delete()                       
@@ -87,7 +85,7 @@ class CustomerOnly(APIView):
 
             return HttpResponse(status=200)
         except Account.DoesNotExist:
-            raise PermissionDenied("Customer does not exist")
+            raise Http404("Customer does not exist")
         
 
 class AccountOnly(APIView):
@@ -95,23 +93,23 @@ class AccountOnly(APIView):
         try:
             account = Account.objects.filter(customer_id=customer_id)
             if not account.exists():
-                raise PermissionDenied("Account does not exist")
+                raise Http404("Account does not exist")
             
             serializer = AccountSerializer(instance=account, many=True)
             return Response(serializer.data)
         except Account.DoesNotExist:
-            raise PermissionDenied("Account does not exist")
+            raise Http404("Account does not exist")
         
     def delete(self, request, customer_id, account_number):
         try:
             account = Account.objects.filter(customer_id=customer_id, account_number=account_number)
             if not account.exists():
-                raise PermissionDenied("Account does not exist")
+                raise Http404("Account does not exist")
 
             account.delete()
             return HttpResponse(status=200)
         except Account.DoesNotExist:
-            raise PermissionDenied("Account does not exist")
+            raise Http404("Account does not exist")
         
 
 class DepositInAccountOnly(APIView):
