@@ -9,8 +9,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Customers, Account
-from .serializers import CustomersSerializer, AccountSerializer
+from .models import Customers, Account, Wallet
+from .serializers import CustomersSerializer, AccountSerializer, WalletSerializer
 
 
 class CustomerList(APIView):
@@ -22,8 +22,6 @@ class CustomerList(APIView):
     def post(self, request):
         if request.method == 'POST':
             received_json_data = json.loads(request.body)
-            print(received_json_data['user'])
-            print(received_json_data['password'])
 
             new_customer_user = User.objects.create_user(username=received_json_data['user'],
                                                     email=received_json_data['email'],
@@ -38,6 +36,25 @@ class CustomerList(APIView):
                                      customer_id=new_customer_user.id)
             new_customer.save()
         return HttpResponse(status=201)
+    
+
+class WalletsList(APIView):
+    def get(self, request):
+        wallet = Wallet.objects.all() #obtener todas las instancias de Wallets
+        serializer = WalletSerializer(wallet, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        if request.method == 'POST':
+            received_json_data = json.loads(request.body)
+            account = Account.objects.filter(account_number = received_json_data['account_number'])
+            if not account.exists():
+                raise Http404 ("Not found.")
+            else:
+                new_wallet = Wallet(wallet_number = received_json_data['wallet_number'],
+                                    account_number = received_json_data['account_number'])
+                new_wallet.save()
+                return HttpResponse(status=201)
 
 
 class AccountList(APIView):
@@ -67,7 +84,7 @@ class CustomerOnly(APIView):
             serializer = CustomersSerializer(instance=customer)
             return Response(serializer.data)
         except Customers.DoesNotExist:
-            raise Http404("Customer does not exist")
+            raise Http404 ("Not found.")
 
     def delete(self, request, customer_id):
         try:        
@@ -76,7 +93,7 @@ class CustomerOnly(APIView):
             user = User.objects.filter(id=customer_id)
 
             if not accounts.exists() and not customer.exists() and not user.exists():
-                raise Http404("Customer does not exist")
+                raise Http404 ("Not found.")
 
             for account in accounts:
                 account.delete()                       
@@ -85,7 +102,7 @@ class CustomerOnly(APIView):
 
             return HttpResponse(status=200)
         except Account.DoesNotExist:
-            raise Http404("Customer does not exist")
+            raise Http404 ("Not found.")
         
 
 class AccountOnly(APIView):
@@ -93,23 +110,23 @@ class AccountOnly(APIView):
         try:
             account = Account.objects.filter(customer_id=customer_id)
             if not account.exists():
-                raise Http404("Account does not exist")
+                raise Http404 ("Not found.")
             
             serializer = AccountSerializer(instance=account, many=True)
             return Response(serializer.data)
         except Account.DoesNotExist:
-            raise Http404("Account does not exist")
+            raise Http404 ("Not found.")
         
     def delete(self, request, customer_id, account_number):
         try:
             account = Account.objects.filter(customer_id=customer_id, account_number=account_number)
             if not account.exists():
-                raise Http404("Account does not exist")
+                raise Http404 ("Not found.")
 
             account.delete()
             return HttpResponse(status=200)
         except Account.DoesNotExist:
-            raise Http404("Account does not exist")
+            raise Http404 ("Not found.")
         
 
 class DepositInAccountOnly(APIView):
@@ -127,26 +144,19 @@ class DepositInAccountOnly(APIView):
             serializer = AccountSerializer(instance=account, many=False)
             return Response(serializer.data)
         except Account.DoesNotExist:
-            raise Http404("Account does not Exist")
+            raise Http404 ("Not found.")
         
     
 class WithdrawInAccount(APIView):
-    def is_transaction_valid(current_balance, withdraw_to_do):
+    def is_transaction_valid(self, current_balance, withdraw_to_do):
         limit_porcentual_threshold = 90
         balance_limit = 100
-        if current_balance > withdraw_to_do:
-            withdraw_to_do_porcentual = ((withdraw_to_do * 100) / current_balance) 
-            if withdraw_to_do_porcentual <= limit_porcentual_threshold:   
-                balance = (current_balance - withdraw_to_do)
-                if balance >= balance_limit:
-                   return True
-                else:
-                    return False
-            else:
-                return False
-        else:
-            return False
-        
+        if current_balance >= withdraw_to_do:
+            withdraw_to_do_porcentual = (withdraw_to_do * 100) / current_balance
+            if withdraw_to_do_porcentual <= limit_porcentual_threshold and (current_balance - withdraw_to_do) >= balance_limit:
+                return True
+        return False 
+    
 
     def post(self, request, customer_id):
         try:
@@ -160,12 +170,11 @@ class WithdrawInAccount(APIView):
                 account.balance = str(current_balance - withdraw_to_do)
                 account.save()
                 serializer = AccountSerializer(instance=account, many=False)
-                return Response(serializer.data)
-                
+                return Response(serializer.data)                
             else:
-                return HttpResponse(status=200, reason="The account cannot have less than $100 in balance, bad transaction.")
+                return HttpResponse(status=400, reason="The account cannot have less than $100 in balance or exceed the withdrawal limit.")
         except Account.DoesNotExist:
-            raise Http404("Account does not Exist")  
+            raise Http404 ("Not found.")
           
 
 class UserLogin(APIView):
