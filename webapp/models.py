@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-
 class Customers(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
@@ -24,10 +23,10 @@ class Account(models.Model):
     
 
 class Wallet(models.Model):
-    wallet_number = models.CharField(max_length=100)
-    balance = models.CharField(max_length=100)
-    account_number =  models.CharField(max_length=100)
-    beneficiary_id = models.IntegerField(max_length=250)    
+    account_number = models.CharField(max_length=100)
+    wallet_number = models.CharField(max_length=100)    
+    balance = models.CharField(max_length=100)    
+    beneficiary_id = models.CharField(max_length=250)    
 
     def __str__(self):
         return str(self.id) + '-' + str(self.wallet_number)

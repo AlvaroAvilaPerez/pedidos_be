@@ -1,14 +1,10 @@
 import json
 
-from django.shortcuts import render
-
-from django.http import HttpResponse, Http404, JsonResponse, HttpResponseBadRequest
+from django.http import HttpResponse, Http404
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
 from .models import Customers, Account, Wallet
 from .serializers import CustomersSerializer, AccountSerializer, WalletSerializer
 
@@ -37,7 +33,7 @@ class CustomerList(APIView):
             new_customer.save()
         return HttpResponse(status=201)
     
-
+    
 class AccountList(APIView):
     def get(self, request):
         accounts = Account.objects.all() #obtener todas las instancias de Accounts
@@ -49,14 +45,13 @@ class AccountList(APIView):
             received_json_data = json.loads(request.body)
             print(received_json_data['customer_id'])
             print(received_json_data['account_number'])
-            print(received_json_data['balance'])
-            # read customer_id from the token in the future
-            new_account = Account(customer_id=received_json_data['customer_id'],
+            print(received_json_data['balance']) 
+            new_account = Account(customer_id=received_json_data['customer_id'], # read customer_id from the token in the future
                                   account_number=received_json_data['account_number'],
                                   balance=received_json_data['balance'])
             new_account.save()
         return HttpResponse(status=201)
-
+    
 
 class WalletsList(APIView):
     def get(self, request):
@@ -71,10 +66,12 @@ class WalletsList(APIView):
             if not account.exists():
                 raise Http404 ("The requested Wallet was not found.")
             else:
-                new_wallet = Wallet(wallet_number = received_json_data['wallet_number'],
-                                    account_number = received_json_data['account_number'])
-                new_wallet.save()
-                return HttpResponse(status=201)
+                new_wallet = Wallet(wallet_number=received_json_data['wallet_number'], 
+                                    account_number=received_json_data['account_number'],
+                                    balance=received_json_data['balance'],
+                                    beneficiary_id=['beneficiary_id'])
+            new_wallet.save()
+        return HttpResponse(status=201)
     
 
 class CustomerOnly(APIView):
@@ -99,7 +96,6 @@ class CustomerOnly(APIView):
                 account.delete()                       
             customer.delete()
             user.delete()
-
             return HttpResponse(status=200)
         except Account.DoesNotExist:
             raise Http404 ("The requested Customer was not found.")
@@ -127,7 +123,31 @@ class AccountOnly(APIView):
             return HttpResponse(status=200)
         except Account.DoesNotExist:
             raise Http404 ("The requested Account was not found.")
+
+
+class WalletOnly(APIView):
+    def get(self, request, account_number):
+        try:
+            wallet = Wallet.objects.filter(account_number)
+            if not wallet.exists():
+                raise Http404 ("The requested Wallet was not found.")
+            serializer=WalletSerializer(instance=wallet, many=True)
+            return Response(serializer.data)
+        except Wallet.DoesNotExist:
+            raise Http404 ("The requested Account was not found.")
+
+    def delete(self, request, account_number):
+        try:
+            wallet = Wallet.objects.filter(account_number=account_number)
+            if not wallet.exists():
+                raise Http404 ("The requested Wallet was not found.")
+            wallet.delete()
+            return HttpResponse(status=200)
+        except Account.DoesNotExist:
+            raise Http404 ("The requested Wallet was not found.")  
         
+
+
 
 class DepositInAccountOnly(APIView):
     def post(self, request, customer_id):
