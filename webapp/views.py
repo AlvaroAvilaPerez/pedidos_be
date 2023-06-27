@@ -66,13 +66,14 @@ class WalletsList(APIView):
             if not account.exists():
                 raise Http404 ("The requested Wallet was not found.")
             else:
-                new_wallet = Wallet(wallet_number=received_json_data['wallet_number'], 
-                                    account_number=received_json_data['account_number'],
-                                    balance=received_json_data['balance'],
-                                    beneficiary_id=['beneficiary_id'])
+                new_wallet = Wallet(account_number=received_json_data['account_number'],
+                                    wallet_number=received_json_data['wallet_number'],
+                                    beneficiary_id=received_json_data['beneficiary_id'],
+                                    balance=0,)  # El saldo se inicializa en cero
+                                    
             new_wallet.save()
-        return HttpResponse(status=201)
-    
+        return HttpResponse(status=201)    
+
 
 class CustomerOnly(APIView):
     def get(self, request, customer_id):
@@ -144,9 +145,7 @@ class WalletOnly(APIView):
             wallet.delete()
             return HttpResponse(status=200)
         except Account.DoesNotExist:
-            raise Http404 ("The requested Wallet was not found.")  
-        
-
+            raise Http404 ("The requested Wallet was not found.") 
 
 
 class DepositInAccountOnly(APIView):

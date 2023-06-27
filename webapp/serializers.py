@@ -13,5 +13,5 @@ class AccountSerializer(serializers.ModelSerializer):
 
 class WalletSerializer(serializers.ModelSerializer):
     class Meta:
-        model =  Wallet
+        model = Wallet
         fields = '__all__'

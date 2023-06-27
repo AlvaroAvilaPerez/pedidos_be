@@ -22,11 +22,11 @@ class Account(models.Model):
         return str(self.id) + ' - User: ' + str(self.customer_id) + " - " + user_owner.first_name + ': Account Number: ' + str(self.account_number)
     
 
-class Wallet(models.Model):
-    account_number = models.CharField(max_length=100)
-    wallet_number = models.CharField(max_length=100)    
-    balance = models.CharField(max_length=100)    
-    beneficiary_id = models.CharField(max_length=250)    
-
+class Wallet(models.Model):    
+    account_number = models.CharField(max_length=50)
+    wallet_number = models.CharField(max_length=50)
+    beneficiary_id = models.CharField(max_length=100)        
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0) 
+    
     def __str__(self):
-        return str(self.id) + '-' + str(self.wallet_number)
+        return f"Wallet: {self.wallet_number}, Account: {self.account_number}, Beneficiary: {self.beneficiary}, Balance: {self.balance}"
