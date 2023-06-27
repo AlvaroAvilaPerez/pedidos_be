@@ -11,7 +11,7 @@ from .serializers import CustomersSerializer, AccountSerializer, WalletSerialize
 
 class CustomerList(APIView):
     def get(self, request):
-        customers1 = Customers.objects.all() #obtener todas las instancias de customers
+        customers1 = Customers.objects.all() 
         serializer = CustomersSerializer(customers1, many=True)
         return Response(serializer.data)
 
@@ -36,7 +36,7 @@ class CustomerList(APIView):
     
 class AccountList(APIView):
     def get(self, request):
-        accounts = Account.objects.all() #obtener todas las instancias de Accounts
+        accounts = Account.objects.all()
         serializer = AccountSerializer(accounts, many=True)
         return Response(serializer.data)
 
@@ -46,7 +46,7 @@ class AccountList(APIView):
             print(received_json_data['customer_id'])
             print(received_json_data['account_number'])
             print(received_json_data['balance']) 
-            new_account = Account(customer_id=received_json_data['customer_id'], # read customer_id from the token in the future
+            new_account = Account(customer_id=received_json_data['customer_id'],
                                   account_number=received_json_data['account_number'],
                                   balance=received_json_data['balance'])
             new_account.save()
@@ -55,7 +55,7 @@ class AccountList(APIView):
 
 class WalletsList(APIView):
     def get(self, request):
-        wallet = Wallet.objects.all() #obtener todas las instancias de Wallets
+        wallet = Wallet.objects.all()
         serializer = WalletSerializer(wallet, many=True)
         return Response(serializer.data)
 
@@ -68,9 +68,8 @@ class WalletsList(APIView):
             else:
                 new_wallet = Wallet(account_number=received_json_data['account_number'],
                                     wallet_number=received_json_data['wallet_number'],
-                                    beneficiary_id=received_json_data['beneficiary_id'],
-                                    balance=0,)  # El saldo se inicializa en cero
-                                    
+                                    beneficiary_id=received_json_data.get('beneficiary_id', None),
+                                    balance=0,)                                
             new_wallet.save()
         return HttpResponse(status=201)    
 
