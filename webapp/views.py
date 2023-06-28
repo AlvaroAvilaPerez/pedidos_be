@@ -20,11 +20,15 @@ class CustomerList(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        if request.method == 'POST':
-            received_json_data = json.loads(request.body)
-
+        received_json_data = json.loads(request.body)
+        email = received_json_data['email'].strip().lower()
+        if User.objects.filter(username=received_json_data['user']).first():
+            return HttpResponse(status=400, reason="User Name already exists")
+        if User.objects.filter(email=email).exists():
+            return HttpResponse(status=400, reason="Email already exists")
+        else:
             new_customer_user = User.objects.create_user(username=received_json_data['user'],
-                                                    email=received_json_data['email'],
+                                                    email=email,
                                                     first_name=received_json_data['first_name'],
                                                     last_name=received_json_data['last_name'],
                                                     password=received_json_data['password'])
@@ -35,8 +39,8 @@ class CustomerList(APIView):
                                      phone=received_json_data['phone'],
                                      customer_id=new_customer_user.id)
             new_customer.save()
-        return HttpResponse(status=201)
-    
+            return HttpResponse(status=201)
+
 
 class AccountList(APIView):
     def get(self, request):
