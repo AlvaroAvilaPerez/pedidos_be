@@ -4,6 +4,13 @@ This document will walk you through the process of installing Django and the Dja
 
 # Previous requirements
 
+In console run the command
+
+*** copy code ***
+pip install -r requerimentes.text 
+
+or
+
 Python 3.6 or higher: Make sure you have Python installed on your system. You can check the python version by running the command in your terminal.
 
 *** copy code ***
