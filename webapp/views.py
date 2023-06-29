@@ -1,21 +1,17 @@
 import json
 
-from django.shortcuts import render
-
-from django.http import HttpResponse, Http404, JsonResponse, HttpResponseBadRequest
+from django.http import HttpResponse, Http404
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
 from .models import Customers, Account, Wallet
 from .serializers import CustomersSerializer, AccountSerializer, WalletSerializer
 
 
 class CustomerList(APIView):
     def get(self, request):
-        customers1 = Customers.objects.all() #obtener todas las instancias de customers
+        customers1 = Customers.objects.all()
         serializer = CustomersSerializer(customers1, many=True)
         return Response(serializer.data)
 
@@ -44,17 +40,13 @@ class CustomerList(APIView):
 
 class AccountList(APIView):
     def get(self, request):
-        accounts = Account.objects.all() #obtener todas las instancias de Accounts
+        accounts = Account.objects.all()
         serializer = AccountSerializer(accounts, many=True)
         return Response(serializer.data)
 
     def post(self, request):
         if request.method == 'POST':
             received_json_data = json.loads(request.body)
-            print(received_json_data['customer_id'])
-            print(received_json_data['account_number'])
-            print(received_json_data['balance'])
-            # read customer_id from the token in the future
             new_account = Account(customer_id=received_json_data['customer_id'],
                                   account_number=received_json_data['account_number'],
                                   balance=received_json_data['balance'])
@@ -64,7 +56,7 @@ class AccountList(APIView):
 
 class WalletsList(APIView):
     def get(self, request):
-        wallet = Wallet.objects.all() #obtener todas las instancias de Wallets
+        wallet = Wallet.objects.all()
         serializer = WalletSerializer(wallet, many=True)
         return Response(serializer.data)
 
@@ -159,8 +151,7 @@ class WithdrawInAccount(APIView):
             withdraw_to_do_porcentual = (withdraw_to_do * 100) / current_balance
             if withdraw_to_do_porcentual <= limit_porcentual_threshold and (current_balance - withdraw_to_do) >= balance_limit:
                 return True
-        return False 
-    
+        return False     
 
     def post(self, request, customer_id):
         try:
@@ -185,16 +176,8 @@ class UserLogin(APIView):
     def post(self, request):
         if request.method == 'POST':
             received_json_data = json.loads(request.body)
-            print(received_json_data['user'])
-            print(received_json_data['password'])
-        # example of Login
         user = authenticate(username=received_json_data['user'], password=received_json_data['password'])
         if user is not None:
-            print('El usuario ha sido loggeado')
-            print(user.first_name)
-            print(user.email)
-            print(user.is_staff)
-
             responseData = {
                 'id': user.id,
                 'name': user.first_name,
@@ -206,5 +189,4 @@ class UserLogin(APIView):
 
             return HttpResponse(json.dumps(responseData), content_type="application/json")
         else:
-            print('User was NOT LOGGED IN')
             return HttpResponse(status=404)
