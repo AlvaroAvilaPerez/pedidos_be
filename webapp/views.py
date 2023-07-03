@@ -9,12 +9,14 @@ from .models import Customers, Account, Wallet
 from .serializers import CustomersSerializer, AccountSerializer, WalletSerializer
 
 
-class CustomerList(APIView):
+class CustomerListView(APIView):
     def get(self, request):
         customers1 = Customers.objects.all()
         serializer = CustomersSerializer(customers1, many=True)
         return Response(serializer.data)
 
+
+class CustomerCreate(APIView):
     def post(self, request):
         received_json_data = json.loads(request.body)
         email = received_json_data['email'].strip().lower()
@@ -38,12 +40,14 @@ class CustomerList(APIView):
             return HttpResponse(status=201)
 
 
-class AccountList(APIView):
+class AccountListView(APIView):
     def get(self, request):
         accounts = Account.objects.all()
         serializer = AccountSerializer(accounts, many=True)
         return Response(serializer.data)
-
+    
+    
+class AccountCreate(APIView):
     def post(self, request):
         if request.method == 'POST':
             received_json_data = json.loads(request.body)
@@ -52,14 +56,16 @@ class AccountList(APIView):
                                   balance=received_json_data['balance'])
             new_account.save()
         return HttpResponse(status=201)
+    
 
-
-class WalletsList(APIView):
+class WalletListView(APIView):
     def get(self, request):
-        wallet = Wallet.objects.all()
-        serializer = WalletSerializer(wallet, many=True)
+        accounts = Account.objects.all()
+        serializer = AccountSerializer(accounts, many=True)
         return Response(serializer.data)
+    
 
+class WalletCreate(APIView):
     def post(self, request):
         if request.method == 'POST':
             received_json_data = json.loads(request.body)
@@ -75,7 +81,7 @@ class WalletsList(APIView):
                 return HttpResponse(status=201)
     
 
-class CustomerOnly(APIView):
+class CustomerDetail(APIView):
     def get(self, request, customer_id):
         try:
             customer = Customers.objects.get(customer_id=customer_id)
@@ -103,7 +109,7 @@ class CustomerOnly(APIView):
             raise Http404 ("The requested Customer was not found.")
         
 
-class AccountOnly(APIView):
+class AccountDetail(APIView):
     def get(self, request, customer_id):
         try:
             account = Account.objects.filter(customer_id=customer_id)
@@ -127,7 +133,7 @@ class AccountOnly(APIView):
             raise Http404 ("The requested Account was not found.")
 
 
-class WalletOnly(APIView):
+class WalletDetail(APIView):
     def get(self, request, account_number):
         try:
             wallet = Wallet.objects.filter(account_number)
@@ -149,7 +155,7 @@ class WalletOnly(APIView):
             raise Http404 ("The requested Wallet was not found.") 
 
 
-class DepositInAccountOnly(APIView):
+class DepositInAccount(APIView):
     def post(self, request, customer_id):
         try:
             received_json_data = json.loads(request.body)

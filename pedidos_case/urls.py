@@ -15,22 +15,22 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from rest_framework.urlpatterns import format_suffix_patterns
 from webapp import views
 
 #rutas de urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('customers/', views.CustomerList.as_view()),
-    path('customer/<int:customer_id>', views.CustomerOnly.as_view()),
-    path('accounts/', views.AccountList.as_view()),
-    path('accounts/<int:customer_id>', views.AccountOnly.as_view()),
-    path('accounts/<int:customer_id>/<str:account_number>', views.AccountOnly.as_view()),  
-    path('wallets/', views.WalletsList.as_view()),
-    path('wallets/<str:account_number>', views.WalletOnly.as_view()),
-    path('wallets/<str:account_number>/<str:wallet_number>', views.WalletOnly.as_view()),
-    path('deposit/<int:customer_id>', views.DepositInAccountOnly.as_view()),
-    path('withdraw/<int:customer_id>', views.WithdrawInAccount.as_view()),
+    path('customers/', views.CustomerListView.as_view(), name='customer-list'),
+    path('customer/create/', views.CustomerCreate.as_view(), name='customer-create'),
+    path('customer/<int:customer_id>', views.CustomerDetail.as_view(), name='customer-detail'),
+    path('accounts/', views.AccountListView.as_view(), name='accounts-list'),
+    path('account/create/', views.AccountCreate.as_view(), name='account-create'),
+    path('account/<int:account_id>', views.AccountDetail.as_view(), name='account-detail-by-number'),
+    path('wallets/', views.WalletListView.as_view(), name='wallet-list'),
+    path('wallet/create/', views.WalletListView.as_view(), name='wallet-create'),
+    path('wallet/<int:wallet_id>', views.WalletCreate.as_view(), name='wallet-create'),
+    path('deposit/<int:account_id>', views.DepositInAccount.as_view(), name='account_id-deposit'),
+    path('withdraw/<int:account_id>', views.WithdrawInAccount.as_view(), name='account_id-withdraw'),
     path('login/', views.UserLogin.as_view()),
 ]
