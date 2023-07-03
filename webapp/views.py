@@ -69,7 +69,6 @@ class WalletsList(APIView):
             else:
                 new_wallet = Wallet(account_number=received_json_data['account_number'],
                                     wallet_number=received_json_data['wallet_number'],
-                                    beneficiary_id=received_json_data.get('beneficiary_id', None),
                                     balance=0,)      
                 new_wallet.save()
                 return HttpResponse(status=201)
