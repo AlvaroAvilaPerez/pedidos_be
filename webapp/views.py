@@ -129,7 +129,7 @@ class AccountOnly(APIView):
 class WalletOnly(APIView):
     def get(self, request, account_number):
         try:
-            wallet = Wallet.objects.filter(account_number)
+            wallet = Wallet.objects.filter(account_number=account_number)
             if not wallet.exists():
                 raise Http404 ("The requested Wallet was not found.")
             serializer=WalletSerializer(instance=wallet, many=True)
@@ -137,9 +137,9 @@ class WalletOnly(APIView):
         except Wallet.DoesNotExist:
             raise Http404 ("The requested Account was not found.")
 
-    def delete(self, request, account_number):
+    def delete(self, request, account_number, wallet_number):
         try:
-            wallet = Wallet.objects.filter(account_number=account_number)
+            wallet = Wallet.objects.filter(account_number=account_number, wallet_number=wallet_number)
             if not wallet.exists():
                 raise Http404 ("The requested Wallet was not found.")
             wallet.delete()
