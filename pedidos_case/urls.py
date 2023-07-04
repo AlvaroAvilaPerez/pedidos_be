@@ -26,9 +26,11 @@ urlpatterns = [
     path('customer/<int:customer_id>', views.CustomerOnly.as_view()),
     path('accounts/', views.AccountList.as_view()),
     path('accounts/<int:customer_id>', views.AccountOnly.as_view()),
-    path('accounts/<int:customer_id>/<str:account_number>', views.AccountOnly.as_view()),
-    path('deposit/<int:customer_id>', views.DepositInAccountOnly.as_view()),
+    path('accounts/<int:customer_id>/<str:account_number>', views.AccountOnly.as_view()),  
     path('wallets/', views.WalletsList.as_view()),
+    path('wallets/<str:account_number>', views.WalletOnly.as_view()),
+    path('wallets/<str:account_number>/<str:wallet_number>', views.WalletOnly.as_view()),
+    path('deposit/<int:customer_id>', views.DepositInAccountOnly.as_view()),
     path('withdraw/<int:customer_id>', views.WithdrawInAccount.as_view()),
     path('login/', views.UserLogin.as_view()),
 ]

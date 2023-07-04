@@ -23,10 +23,10 @@ class Account(models.Model):
     
 
 class Wallet(models.Model):
-    wallet_number = models.CharField(max_length=100)
-    balance = models.CharField(max_length=100)
-    account_number =  models.CharField(max_length=100)
-    beneficiary_id = models.IntegerField(max_length=250)    
+    account_number = models.CharField(max_length=50)
+    wallet_number = models.CharField(max_length=50)
+    beneficiary_id = models.CharField(max_length=100, null=True)        
+    balance = models.CharField(max_length=100, default=0) 
 
     def __str__(self):
         return str(self.id) + '-' + str(self.wallet_number)
