@@ -51,28 +51,30 @@ class AccountCreate(APIView):
             received_json_data = json.loads(request.body)
             customer_id = received_json_data['customer_id']
             account_number = received_json_data['account_number']
-            if not customer_id or not account_number:
-                raise Http404("Both customer_id and account_number are required.")
-            
-            account = Wallet.objects.filter(customer_id=customer_id, account_number=account_number)
-            if account.exists():
-                raise Http404("The requested Wallet already exists.")
-            
-            new_account = Wallet(customer_id=customer_id, account_number=account_number)
-            new_account.save()           
 
-        return HttpResponse(status=201)   
-
+            customer = Account.objects.filter(customer_id=customer_id)
+            if customer.exists():
+                account = Account.objects.filter(account_number=account_number)
+                if account.exists():
+                    raise Http404("The requested Account already exists.")
+            else:
+                new_account = Account(customer_id=customer_id,
+                                     account_number=account_number)
+                new_account.save()
+                return HttpResponse(status=201)
+            
     
 class AccountsOfACustomer(APIView):
     def get(self, request, customer_id):
         try:
             account = Account.objects.filter(customer_id=customer_id)
+            
             if not account.exists():
                 raise Http404 ("The requested Account was not found.")
             
             serializer = AccountSerializer(instance=account, many=True)
             return Response(serializer.data)
+        
         except Account.DoesNotExist:
             raise Http404 ("The requested Account was not found.")
 
@@ -81,22 +83,27 @@ class AccountOnly(APIView):
     def get(self, request,customer_id, account_number):
         try:
             account = Account.objects.filter(customer_id=customer_id, account_number=account_number)
+
             if not account.exists():
                 raise Http404 ("The requested Account was not found.")
             
             serializer = AccountSerializer(instance=account, many=True)
             return Response(serializer.data)
+        
         except Account.DoesNotExist:
             raise Http404 ("The requested Account was not found.")
 
     def delete(self, request, customer_id, account_number):
         try:
-            account = Account.objects.filter(customer_id=customer_id, account_number=account_number)
-            if not account.exists():
+            customer= Account.objects.filter(customer_id=customer_id)
+            account = Account.objects.filter(account_number=account_number)
+            
+            if not customer.exists() or not account.exists() :
                 raise Http404 ("The requested Account was not found.")
-
-            account.delete()
-            return HttpResponse(status=200)
+            else:
+                account.delete()
+                return HttpResponse(status=200)
+            
         except Account.DoesNotExist:
             raise Http404 ("The requested Account was not found.")
         
