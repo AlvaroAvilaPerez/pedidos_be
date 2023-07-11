@@ -15,7 +15,7 @@ class Customers(models.Model):
 class Account(models.Model):
     customer_id = models.IntegerField()
     account_number = models.CharField(max_length=100)
-    balance = models.CharField(max_length=100)
+    balance = models.CharField(max_length=100, default=0)
 
     def __str__(self):
         user_owner = Customers.objects.get(customer_id=self.customer_id)
