@@ -1,6 +1,4 @@
 import json
-from pstats import Stats
-import statistics
 
 from django.http import HttpResponse, Http404
 from django.contrib.auth import authenticate
@@ -9,11 +7,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Customers, Account, Wallet
 from .serializers import CustomersSerializer, AccountSerializer, WalletSerializer
-
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.views import APIView
-import json
 
 
 
@@ -60,6 +53,10 @@ class AccountCreate(APIView):
             customer_id = received_json_data['customer_id']
             account_number = received_json_data['account_number']
             customer = Account.objects.filter(customer_id=customer_id)
+
+            if not customer_id or not account_number:
+                return HttpResponse(status=400)
+
             if not customer.exists():
                 new_account = Account(customer_id=customer_id,
                                      account_number=account_number)
