@@ -59,21 +59,17 @@ class AccountCreate(APIView):
             received_json_data = json.loads(request.body)
             customer_id = received_json_data['customer_id']
             account_number = received_json_data['account_number']
-            customer = Account.objects.filter(customer_id=customer_id)
-            if not customer.exists():
+            if not customer_id or not account_number:
+                return HttpResponse(status=400)
+                        
+            customer = Customers.objects.filter(customer_id=customer_id)
+            if customer.exists():
                 new_account = Account(customer_id=customer_id,
                                      account_number=account_number)
                 new_account.save()
                 return HttpResponse(status=201)
             else:
-                account = Account.objects.filter(account_number=account_number)
-                if account.exists():
-                    raise Http404("The requested account already exists.")
-                else:
-                    new_account = Account(customer_id=customer_id,
-                                        account_number=account_number)
-                    new_account.save()
-                    return HttpResponse(status=201)
+                raise Http404("The requested Customer does not exist.")
         
     
 class AccountsOfACustomer(APIView):
