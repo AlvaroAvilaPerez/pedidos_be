@@ -94,7 +94,7 @@ class AccountOnly(APIView):
             if not account.exists():
                 raise Http404 ("The requested Account was not found.")
             
-            serializer = AccountSerializer(instance=account, many=True)
+            serializer = AccountSerializer(instance=account, many=False)
             return Response(serializer.data)
         
         except Account.DoesNotExist:
@@ -140,6 +140,20 @@ class WalletCreate(APIView):
             new_wallet.save()
             return HttpResponse(status=201)
 
+class WalletsOfAcoount(APIView):
+
+    def get(self, request, customer_id):
+        try:
+            account = Account.objects.filter(customer_id=customer_id)
+            
+            if not account.exists():
+                raise Http404("The requested Account was not found.")
+            
+            serializer = AccountSerializer(instance=account, many=True)
+            return Response(serializer.data)
+        
+        except Account.DoesNotExist:
+            raise Http404("The requested Account was not found.")
 
 class WalletOnly(APIView):
     def get(self, request, account_number, wallet_number):
@@ -192,16 +206,13 @@ class CustomerOnly(APIView):
         
 
 class AccountOnly(APIView):
-    def get(self, request, customer_id):
+    def get(self, request, customer_id, account_number):
         try:
-            account = Account.objects.filter(customer_id=customer_id)
-            if not account.exists():
-                raise Http404("The requested Account was not found.")
-            
-            serializer = AccountSerializer(instance=account, many=True)
+            account = Account.objects.get(customer_id=customer_id, account_number=account_number)
+            serializer = AccountSerializer(instance=account)
             return Response(serializer.data)
         except Account.DoesNotExist:
-            raise Http404("The requested Account was not found.")
+            raise Http404("La cuenta solicitada no se encontró.")
         
     def delete(self, request, customer_id, account_number):
         try:
