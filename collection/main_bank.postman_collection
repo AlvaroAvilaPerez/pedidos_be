@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "f13c9623-9613-49cc-ae06-f5d7186129b0",
-		"name": "main_bank.postman_collection",
+		"_postman_id": "58766150-e157-4f82-9f68-bd2bec3bbec2",
+		"name": "main_bank.postman_collection Copy",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "11938824"
 	},
@@ -22,7 +22,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user\": \"Juan\",\r\n    \"email\": \"Juan.Avila@Gmail.com\",\r\n    \"first_name\": \"Juan\",\r\n    \"last_name\": \"Avila\",\r\n    \"password\": \"Control123\",\r\n    \"address\": \"Quillacollo 1344\",\r\n    \"phone\": \"787525222\"\r\n}",
+							"raw": "{\r\n    \"user\": \"Marisol\",\r\n    \"email\": \"Marisol.Burgos@gmail.com\",\r\n    \"first_name\": \"Marisol\",\r\n    \"last_name\": \"Burgos\",\r\n    \"password\": \"Control123\",\r\n    \"address\": \"Quillacollo 1344\",\r\n    \"phone\": \"787525666\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -48,7 +48,7 @@
 					"response": []
 				},
 				{
-					"name": "Get Customers",
+					"name": "Get Customers List",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -71,7 +71,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/customers/",
+							"raw": "http://127.0.0.1:8000/customers",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -81,8 +81,30 @@
 							],
 							"port": "8000",
 							"path": [
-								"customers",
-								""
+								"customers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Customer",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/customer/41",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"customer",
+								"41"
 							]
 						}
 					},
@@ -94,7 +116,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://127.0.0.1:8000/customer/4",
+							"raw": "http://127.0.0.1:8000/customer/22",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -105,7 +127,7 @@
 							"port": "8000",
 							"path": [
 								"customer",
-								"4"
+								"22"
 							]
 						}
 					},
@@ -129,7 +151,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"customer_id\": 42,\r\n    \"account_number\": \"900-258-123\",\r\n    \"balance\": \"150\"\r\n}",
+							"raw": "{\r\n    \"customer_id\": 41,\r\n    \"account_number\": \"222-222-222\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -137,7 +159,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/accounts/",
+							"raw": "http://127.0.0.1:8000/account/create/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -147,7 +169,8 @@
 							],
 							"port": "8000",
 							"path": [
-								"accounts",
+								"account",
+								"create",
 								""
 							]
 						}
@@ -218,7 +241,31 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/accounts/42",
+							"raw": "http://127.0.0.1:8000/account/41/222-222-222",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8000",
+							"path": [
+								"account",
+								"41",
+								"222-222-222"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Accounts of a customer",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:8000/accounts/41",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -229,7 +276,7 @@
 							"port": "8000",
 							"path": [
 								"accounts",
-								"42"
+								"41"
 							]
 						}
 					},
@@ -257,7 +304,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/accounts/21/950-258-4432",
+							"raw": "http://127.0.0.1:8000/accounts//31/900-258-12-68",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -268,8 +315,9 @@
 							"port": "8000",
 							"path": [
 								"accounts",
-								"21",
-								"950-258-4432"
+								"",
+								"31",
+								"900-258-12-68"
 							]
 						}
 					},
@@ -287,7 +335,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"wallet_number\": \"03\",\r\n    \"account_number\": \"441-258-6901\",\r\n    \"balance\": 0\r\n}",
+							"raw": "{\r\n    \"wallet_number\": \"02\",\r\n    \"account_number\": \"222-222-222\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -295,7 +343,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/wallets/",
+							"raw": "http://127.0.0.1:8000/wallet/create/",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -305,7 +353,8 @@
 							],
 							"port": "8000",
 							"path": [
-								"wallets",
+								"wallet",
+								"create",
 								""
 							]
 						}
@@ -336,12 +385,12 @@
 					"response": []
 				},
 				{
-					"name": "Wallets Of An Account",
+					"name": "Wallet Of An Account",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://127.0.0.1:8000/wallets/900-258-123",
+							"raw": "http://127.0.0.1:8000/wallet/222-222-222/02",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -351,8 +400,9 @@
 							],
 							"port": "8000",
 							"path": [
-								"wallets",
-								"900-258-123"
+								"wallet",
+								"222-222-222",
+								"02"
 							]
 						}
 					},
@@ -380,7 +430,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/wallets/03/441-258-6901",
+							"raw": "http://127.0.0.1:8000/wallet/900-258-12-68/01",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -390,9 +440,9 @@
 							],
 							"port": "8000",
 							"path": [
-								"wallets",
-								"03",
-								"441-258-6901"
+								"wallet",
+								"900-258-12-68",
+								"01"
 							]
 						}
 					},
@@ -410,7 +460,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"user\": \"Jose\",\r\n    \"password\": \"Control123\"\r\n}",
+							"raw": "{\r\n    \"user\": \"alvaro\",\r\n    \"password\": \"Control123\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -453,7 +503,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"account_number\": \"900-258-123\",\r\n    \"deposit\": \"100\"\r\n}",
+							"raw": "{\r\n    \"account_number\": \"441-258-6901\",\r\n    \"deposit\": \"10200\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -461,7 +511,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:8000/deposit/42",
+							"raw": "http://127.0.0.1:8000/deposit/20",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -472,7 +522,7 @@
 							"port": "8000",
 							"path": [
 								"deposit",
-								"42"
+								"20"
 							]
 						}
 					},
