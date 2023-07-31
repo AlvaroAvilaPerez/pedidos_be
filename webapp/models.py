@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Customers(models.Model):
-    first_name = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=100) 
     last_name = models.CharField(max_length=100)
     address = models.CharField(max_length=250, default='No Address')
     phone = models.CharField(max_length=25, default='None')
