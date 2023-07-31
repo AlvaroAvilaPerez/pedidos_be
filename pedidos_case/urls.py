@@ -23,7 +23,7 @@ from webapp import views
 urlpatterns = [    
     path('admin/', admin.site.urls),
     path('customers/', views.CustomerList.as_view()),
-    path('customer/<int:customer_id>', views.CustomerOnly.as_view()),
+    path('customer/<int:customer_id>/', views.CustomerOnly.as_view()),
     path('accounts/', views.AccountListView.as_view(), name='accounts-list'),
     path('account/create/', views.AccountCreate.as_view(), name='account-create'),
     path('accounts/<int:customer_id>/', views.AccountsOfACustomer.as_view(), name='account-of-a-acount'),
